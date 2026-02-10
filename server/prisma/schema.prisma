@@ -13,12 +13,18 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  admin
+  agent
+}
+
 model User {
   id            String    @id
   name          String
   email         String    @unique
   emailVerified Boolean
   image         String?
+  role          Role      @default(agent)
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
