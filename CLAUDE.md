@@ -47,5 +47,6 @@ The client proxies `/api/*` requests to the server via Vite config.
 - **Client config**: `client/src/lib/auth-client.ts` — exports `signIn`, `signOut`, `useSession`
 - **Middleware**: `server/src/middleware/require-auth.ts` — `requireAuth` guard that sets `req.user` and `req.session`
 - **Route protection (client)**: `ProtectedRoute` component wraps authenticated routes; redirects to `/login` if unauthenticated
+- **Admin route protection (client)**: `AdminRoute` component wraps admin-only routes; redirects non-admins to `/`
 - **Sign-up is disabled** — users are seeded via `prisma/seed.ts`
 - **User roles**: `admin` and `agent` (defined as Prisma enum, default `agent`)

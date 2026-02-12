@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router";
+import { Link, Outlet, useNavigate } from "react-router";
 import { signOut, useSession } from "../lib/auth-client";
 
 export default function Layout() {
@@ -13,7 +13,14 @@ export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col">
       <nav className="flex items-center justify-between bg-background border-b px-6 h-14">
-        <span className="text-lg font-bold">Helpdesk</span>
+        <div className="flex items-center gap-6">
+          <span className="text-lg font-bold">Helpdesk</span>
+          {session?.user?.role === "admin" && (
+            <Link to="/users" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Users
+            </Link>
+          )}
+        </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">{session?.user?.name}</span>
           <button
