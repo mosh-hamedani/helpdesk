@@ -17,6 +17,7 @@ A ticket management system that uses AI to classify, respond to, and route suppo
 ```
 /client   - React frontend (Vite)
 /server   - Express backend
+/e2e      - Playwright E2E tests
 ```
 
 ## Development
@@ -29,7 +30,7 @@ cd server && bun run dev
 cd client && bun run dev
 ```
 
-The client proxies `/api/*` requests to the server via Vite config.
+The client proxies `/api/*` requests to the server via Vite config (target is configurable via `VITE_API_URL` env var, defaults to `http://localhost:3000`).
 
 ## Key Conventions
 
@@ -50,3 +51,13 @@ The client proxies `/api/*` requests to the server via Vite config.
 - **Admin route protection (client)**: `AdminRoute` component wraps admin-only routes; redirects non-admins to `/`
 - **Sign-up is disabled** — users are seeded via `prisma/seed.ts`
 - **User roles**: `admin` and `agent` (defined as Prisma enum, default `agent`)
+- **Rate limiting**: Auth routes are rate-limited, but only enforced when `NODE_ENV=production`
+
+## E2E Testing
+
+- **Framework**: Playwright (config at root `playwright.config.ts`)
+- **Test database**: `helpdesk_test` (isolated from dev `helpdesk` DB), configured in `server/.env.test`
+- **Ports**: Test server on 3001, test client on 5174 (dev uses 3000/5173)
+- **Global setup** (`e2e/global-setup.ts`): Runs `prisma migrate reset --force` then seeds the test DB
+- **Tests directory**: `e2e/tests/`
+- **Run tests**: `bun run test:e2e` from root (also `test:e2e:ui`, `test:e2e:headed`)
