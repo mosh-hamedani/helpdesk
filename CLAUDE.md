@@ -57,5 +57,14 @@ The client proxies `/api/*` requests to the server via Vite config (target is co
 
 ## Testing
 
+### Component Tests
+- **Framework**: Vitest + React Testing Library
+- Run with `cd client && bun run test` (single run) or `bun run test:watch` (watch mode)
+- Place test files next to the component: `ComponentName.test.tsx`
+- Use `renderWithQuery` from `@/test/render` to wrap components that use TanStack React Query
+- Mock Axios with `vi.mock("axios")` and `vi.mocked(axios, { deep: true })`
+
+### E2E Tests
+- **Framework**: Playwright
 - Use the `e2e-test-writer` agent for writing Playwright E2E tests
-- Run tests with `bun run test:e2e` from root
+- Run with `bun run test:e2e` from root
