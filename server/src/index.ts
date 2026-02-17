@@ -5,8 +5,7 @@ import rateLimit from "express-rate-limit";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { requireAuth } from "./middleware/require-auth";
-import { requireAdmin } from "./middleware/require-admin";
-import prisma from "./db";
+import usersRouter from "./routes/users";
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error("BETTER_AUTH_SECRET environment variable is required");
@@ -52,13 +51,7 @@ app.get("/api/me", requireAuth, (req, res) => {
   res.json({ user: { id, name, email, role } });
 });
 
-app.get("/api/users", requireAuth, requireAdmin, async (req, res) => {
-  const users = await prisma.user.findMany({
-    select: { id: true, name: true, email: true, role: true, createdAt: true },
-    orderBy: { createdAt: "asc" },
-  });
-  res.json({ users });
-});
+app.use("/api/users", usersRouter);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

@@ -15,6 +15,7 @@ A ticket management system that uses AI to classify, respond to, and route suppo
 ## Project Structure
 
 ```
+/core     - Shared code (Zod schemas, types) — Bun workspace package
 /client   - React frontend (Vite)
 /server   - Express backend
 /e2e      - Playwright E2E tests
@@ -40,6 +41,12 @@ The client proxies `/api/*` requests to the server via Vite config (target is co
 - Use shadcn/ui components for all UI (import from `@/components/ui/*`)
 - Use the `@/` path alias for imports (maps to `./src/`)
 - Use shadcn's semantic color tokens (e.g. `bg-background`, `text-muted-foreground`, `text-destructive`) instead of hardcoded Tailwind colors
+- Organize server endpoints into Express `Router` modules under `server/src/routes/` (e.g. `routes/users.ts`), mounted in `index.ts`
+- Define shared Zod schemas in the `core` package under `core/schemas/` (e.g. `core/schemas/users.ts`) and import them in both client and server (e.g. `import { createUserSchema } from "core/schemas/users"`)
+- Use Zod for validation (import from `zod/v4`)
+- Do not wrap async route handlers in try/catch — Express 5 automatically catches rejected promises
+- Use Prisma-generated enums (e.g. `Role`) instead of hardcoded strings (import from `./generated/prisma/enums`)
+- Use React Hook Form with Zod resolver for client-side form validation (`useForm` + `zodResolver` from `@hookform/resolvers/zod`)
 - Use Axios for HTTP requests (not `fetch`)
 - Use TanStack React Query (`useQuery`, `useMutation`) for server state management (not `useEffect` + `useState`)
 
