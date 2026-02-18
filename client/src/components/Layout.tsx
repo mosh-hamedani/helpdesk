@@ -1,4 +1,5 @@
 import { Link, Outlet, useNavigate } from "react-router";
+import { Role } from "core/constants/role.ts";
 import { signOut, useSession } from "../lib/auth-client";
 
 export default function Layout() {
@@ -15,7 +16,7 @@ export default function Layout() {
       <nav className="flex items-center justify-between bg-background border-b px-6 h-14">
         <div className="flex items-center gap-6">
           <Link to="/" className="text-lg font-bold hover:text-foreground transition-colors">Helpdesk</Link>
-          {session?.user?.role === "admin" && (
+          {session?.user?.role === Role.admin && (
             <Link to="/users" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Users
             </Link>

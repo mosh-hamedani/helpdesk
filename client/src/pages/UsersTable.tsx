@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { Role } from "core/constants/role.ts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,21 +13,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, Pencil } from "lucide-react";
+import { AlertCircle, Pencil, Trash2 } from "lucide-react";
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "agent";
+  role: Role;
   createdAt: string;
 }
 
 interface UsersTableProps {
   onEdit: (user: User) => void;
+  onDelete: (user: User) => void;
 }
 
-export default function UsersTable({ onEdit }: UsersTableProps) {
+export default function UsersTable({ onEdit, onDelete }: UsersTableProps) {
   const {
     data: users,
     isLoading,
@@ -86,7 +88,7 @@ export default function UsersTable({ onEdit }: UsersTableProps) {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <Badge
-                    variant={user.role === "admin" ? "default" : "secondary"}
+                    variant={user.role === Role.admin ? "default" : "secondary"}
                   >
                     {user.role}
                   </Badge>
@@ -103,6 +105,16 @@ export default function UsersTable({ onEdit }: UsersTableProps) {
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
+                  {user.role !== Role.admin && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDelete(user)}
+                      aria-label={`Delete ${user.name}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

@@ -2,7 +2,7 @@ import { Router, type Response } from "express";
 import type { ZodType } from "zod/v4";
 import { hashPassword } from "better-auth/crypto";
 import { createUserSchema, updateUserSchema } from "core/schemas/users.ts";
-import { Role } from "../generated/prisma/enums";
+import { Role } from "core/constants/role.ts";
 import { requireAuth } from "../middleware/require-auth";
 import { requireAdmin } from "../middleware/require-admin";
 import prisma from "../db";
@@ -20,6 +20,7 @@ const router = Router();
 
 router.get("/", requireAuth, requireAdmin, async (req, res) => {
   const users = await prisma.user.findMany({
+    where: { deletedAt: null },
     select: { id: true, name: true, email: true, role: true, createdAt: true },
     orderBy: { createdAt: "asc" },
   });
@@ -108,6 +109,30 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
   });
 
   res.json({ user });
+});
+
+router.delete("/:id", requireAuth, requireAdmin, async (req, res) => {
+  const id = req.params.id as string;
+
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  if (user.role === Role.admin) {
+    res.status(403).json({ error: "Admin users cannot be deleted" });
+    return;
+  }
+
+  await prisma.user.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
+
+  await prisma.session.deleteMany({ where: { userId: id } });
+
+  res.json({ message: "User deleted" });
 });
 
 export default router;

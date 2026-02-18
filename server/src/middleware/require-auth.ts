@@ -12,6 +12,11 @@ export const requireAuth: RequestHandler = async (req, res, next) => {
     return;
   }
 
+  if (session.user.deletedAt) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
   req.user = session.user;
   req.session = session.session;
   next();

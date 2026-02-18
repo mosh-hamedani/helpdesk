@@ -45,7 +45,7 @@ The client proxies `/api/*` requests to the server via Vite config (target is co
 - Define shared Zod schemas in the `core` package under `core/schemas/` (e.g. `core/schemas/users.ts`) and import them in both client and server (e.g. `import { createUserSchema } from "core/schemas/users"`)
 - Use Zod for validation (import from `zod/v4`)
 - Do not wrap async route handlers in try/catch — Express 5 automatically catches rejected promises
-- Use Prisma-generated enums (e.g. `Role`) instead of hardcoded strings (import from `./generated/prisma/enums`)
+- Use the shared `Role` constant instead of hardcoded `"admin"` / `"agent"` strings (import from `core/constants/role.ts`, e.g. `import { Role } from "core/constants/role.ts"`)
 - Use React Hook Form with Zod resolver for client-side form validation (`useForm` + `zodResolver` from `@hookform/resolvers/zod`)
 - Use Axios for HTTP requests (not `fetch`)
 - Use TanStack React Query (`useQuery`, `useMutation`) for server state management (not `useEffect` + `useState`)

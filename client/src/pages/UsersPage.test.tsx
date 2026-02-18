@@ -2,6 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import axios from "axios";
+import { Role } from "core/constants/role.ts";
 import { renderWithQuery } from "@/test/render";
 import UsersPage from "./UsersPage";
 
@@ -13,14 +14,14 @@ const mockUsers = [
     id: "1",
     name: "Alice Admin",
     email: "alice@example.com",
-    role: "admin" as const,
+    role: Role.admin,
     createdAt: "2025-01-15T00:00:00.000Z",
   },
   {
     id: "2",
     name: "Bob Agent",
     email: "bob@example.com",
-    role: "agent" as const,
+    role: Role.agent,
     createdAt: "2025-02-20T00:00:00.000Z",
   },
 ];
@@ -184,5 +185,89 @@ describe("UsersPage", () => {
     expect(screen.getByLabelText("Name")).toHaveValue("Alice Admin");
     expect(screen.getByLabelText("Email")).toHaveValue("alice@example.com");
     expect(screen.getByLabelText("Password")).toHaveValue("");
+  });
+
+  it("should show delete button for agent rows but not admin rows", async () => {
+    mockedAxios.get.mockResolvedValue({ data: { users: mockUsers } });
+    renderWithQuery(<UsersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Alice Admin")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByRole("button", { name: "Delete Alice Admin" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete Bob Agent" })).toBeInTheDocument();
+  });
+
+  it("should open confirmation dialog when clicking delete", async () => {
+    mockedAxios.get.mockResolvedValue({ data: { users: mockUsers } });
+    const user = userEvent.setup();
+    renderWithQuery(<UsersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Bob Agent")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Delete Bob Agent" }));
+
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+    expect(screen.getByText(/Are you sure you want to delete Bob Agent/)).toBeInTheDocument();
+  });
+
+  it("should close confirmation dialog when clicking Cancel", async () => {
+    mockedAxios.get.mockResolvedValue({ data: { users: mockUsers } });
+    const user = userEvent.setup();
+    renderWithQuery(<UsersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Bob Agent")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Delete Bob Agent" }));
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    });
+
+    expect(mockedAxios.delete).not.toHaveBeenCalled();
+  });
+
+  it("should call axios.delete when clicking Confirm", async () => {
+    mockedAxios.get.mockResolvedValue({ data: { users: mockUsers } });
+    mockedAxios.delete.mockResolvedValue({ data: { message: "User deleted" } });
+    const user = userEvent.setup();
+    renderWithQuery(<UsersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Bob Agent")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Delete Bob Agent" }));
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
+
+    await waitFor(() => {
+      expect(mockedAxios.delete).toHaveBeenCalledWith("/api/users/2");
+    });
+  });
+
+  it("should refresh users list after successful deletion", async () => {
+    mockedAxios.get.mockResolvedValue({ data: { users: mockUsers } });
+    mockedAxios.delete.mockResolvedValue({ data: { message: "User deleted" } });
+    const user = userEvent.setup();
+    renderWithQuery(<UsersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Bob Agent")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Delete Bob Agent" }));
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
+
+    await waitFor(() => {
+      expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+    });
   });
 });

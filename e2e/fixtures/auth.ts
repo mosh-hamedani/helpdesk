@@ -1,4 +1,5 @@
 import { Page, expect } from "@playwright/test";
+import { Role } from "core/constants/role.ts";
 
 /**
  * Test credentials based on seeded data from server/prisma/seed.ts
@@ -8,7 +9,7 @@ export const TEST_USERS = {
     email: "admin@example.com",
     password: "password123",
     name: "Admin",
-    role: "admin",
+    role: Role.admin,
   },
   // Currently only admin is seeded, but we can add agent users here if seeded
 } as const;
