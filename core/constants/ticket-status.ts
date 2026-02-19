@@ -1,5 +1,1 @@
-export enum TicketStatus {
-  open = "open",
-  resolved = "resolved",
-  closed = "closed",
-}
+export type TicketStatus = "open" | "resolved" | "closed";

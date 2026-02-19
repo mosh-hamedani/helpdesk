@@ -6,6 +6,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { requireAuth } from "./middleware/require-auth";
 import usersRouter from "./routes/users";
+import ticketsRouter from "./routes/tickets";
 import webhooksRouter from "./routes/webhooks";
 
 if (!process.env.BETTER_AUTH_SECRET) {
@@ -53,6 +54,7 @@ app.get("/api/me", requireAuth, (req, res) => {
 });
 
 app.use("/api/users", usersRouter);
+app.use("/api/tickets", ticketsRouter);
 app.use("/api/webhooks", webhooksRouter);
 
 if (!process.env.WEBHOOK_SECRET) {

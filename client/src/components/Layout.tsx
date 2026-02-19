@@ -16,6 +16,9 @@ export default function Layout() {
       <nav className="flex items-center justify-between bg-background border-b px-6 h-14">
         <div className="flex items-center gap-6">
           <Link to="/" className="text-lg font-bold hover:text-foreground transition-colors">Helpdesk</Link>
+          <Link to="/tickets" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Tickets
+          </Link>
           {session?.user?.role === Role.admin && (
             <Link to="/users" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Users
