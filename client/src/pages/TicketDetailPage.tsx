@@ -1,11 +1,18 @@
 import { useParams, Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { type TicketStatus, statusVariant } from "core/constants/ticket-status.ts";
 import { type TicketCategory } from "core/constants/ticket-category.ts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -29,14 +36,40 @@ interface TicketDetail {
   updatedAt: string;
 }
 
+interface Agent {
+  id: string;
+  name: string;
+}
+
 export default function TicketDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
   const { data: ticket, isLoading, error } = useQuery({
     queryKey: ["ticket", id],
     queryFn: async () => {
       const { data } = await axios.get<TicketDetail>(`/api/tickets/${id}`);
       return data;
+    },
+  });
+
+  const { data: agentsData } = useQuery({
+    queryKey: ["agents"],
+    queryFn: async () => {
+      const { data } = await axios.get<{ agents: Agent[] }>("/api/agents");
+      return data;
+    },
+  });
+
+  const assignMutation = useMutation({
+    mutationFn: async (assignedToId: string | null) => {
+      const { data } = await axios.patch<TicketDetail>(`/api/tickets/${id}`, {
+        assignedToId,
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ticket", id] });
     },
   });
 
@@ -93,9 +126,26 @@ export default function TicketDetailPage() {
               <span className="text-muted-foreground">From: </span>
               {ticket.senderName} ({ticket.senderEmail})
             </div>
-            <div>
+            <div className="flex items-center gap-2">
               <span className="text-muted-foreground">Assigned to: </span>
-              {ticket.assignedTo ? ticket.assignedTo.name : "Unassigned"}
+              <Select
+                value={ticket.assignedTo?.id ?? "unassigned"}
+                onValueChange={(value) =>
+                  assignMutation.mutate(value === "unassigned" ? null : value)
+                }
+              >
+                <SelectTrigger size="sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {agentsData?.agents.map((agent) => (
+                    <SelectItem key={agent.id} value={agent.id}>
+                      {agent.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <span className="text-muted-foreground">Created: </span>

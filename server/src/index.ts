@@ -7,6 +7,7 @@ import { auth } from "./lib/auth";
 import { requireAuth } from "./middleware/require-auth";
 import usersRouter from "./routes/users";
 import ticketsRouter from "./routes/tickets";
+import agentsRouter from "./routes/agents";
 import webhooksRouter from "./routes/webhooks";
 
 if (!process.env.BETTER_AUTH_SECRET) {
@@ -55,6 +56,7 @@ app.get("/api/me", requireAuth, (req, res) => {
 
 app.use("/api/users", usersRouter);
 app.use("/api/tickets", ticketsRouter);
+app.use("/api/agents", agentsRouter);
 app.use("/api/webhooks", webhooksRouter);
 
 if (!process.env.WEBHOOK_SECRET) {

@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { ticketStatuses } from "../constants/ticket-status.ts";
-import { ticketCategories } from "../constants/ticket-category.ts";
+import { ticketStatuses } from "../constants/ticket-status";
+import { ticketCategories } from "../constants/ticket-category";
 
 export const inboundEmailSchema = z.object({
   from: z.email("Invalid email address"),
@@ -21,6 +21,10 @@ const sortableColumns = [
 ] as const;
 
 export type TicketSortField = (typeof sortableColumns)[number];
+
+export const assignTicketSchema = z.object({
+  assignedToId: z.string().nullable(),
+});
 
 export const ticketListQuerySchema = z.object({
   sortBy: z.enum(sortableColumns).default("createdAt"),
