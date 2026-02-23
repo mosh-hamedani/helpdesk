@@ -28,4 +28,6 @@ export const ticketListQuerySchema = z.object({
   status: z.enum(ticketStatuses).optional(),
   category: z.enum(ticketCategories).optional(),
   search: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(10),
 });
