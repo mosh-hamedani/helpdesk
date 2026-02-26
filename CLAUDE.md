@@ -1,4 +1,4 @@
-****# Helpdesk - AI-Powered Ticket Management System
+# Helpdesk - AI-Powered Ticket Management System
 
 ## Project Overview
 
@@ -11,6 +11,7 @@ A ticket management system that uses AI to classify, respond to, and route suppo
 - **Database**: PostgreSQL with Prisma ORM
 - **AI**: OpenAI GPT-5 Nano via Vercel AI SDK (`@ai-sdk/openai`)
 - **Auth**: Better Auth (email/password, database sessions)
+- **Job Queue**: pg-boss (PostgreSQL-backed, runs in `pgboss` schema)
 
 ## Project Structure
 
@@ -54,6 +55,16 @@ The client proxies `/api/*` requests to the server via Vite config (target is co
 - Use TanStack React Query (`useQuery`, `useMutation`) for server state management (not `useEffect` + `useState`)
 - Use the `ErrorAlert` component for error messages (`import ErrorAlert from "@/components/ErrorAlert"`). For static messages: `<ErrorAlert message="Failed to load data" />`. For mutation/query errors with automatic Axios message extraction: `<ErrorAlert error={mutation.error} fallback="Failed to save" />`.
 - Use the `ErrorMessage` component for field validation errors (`import ErrorMessage from "@/components/ErrorMessage"`): `{errors.name && <ErrorMessage message={errors.name.message} />}`
+
+## Job Queue (pg-boss)
+
+- **Config**: `server/src/lib/queue.ts` — creates pg-boss instance using `DATABASE_URL`
+- pg-boss auto-creates its own `pgboss` schema in PostgreSQL (no Prisma migration needed)
+- `startQueue()` is called before `app.listen()` in the async `boot()` function in `index.ts`
+- `stopQueue()` is called on `SIGTERM`/`SIGINT` for graceful shutdown
+- To add a new background job: create a queue with `boss.createQueue()`, register a worker with `boss.work()` in `startQueue()`, and export a `send*Job()` function
+- **Existing queues**:
+  - `classify-ticket` — classifies inbound tickets via GPT (retryLimit: 3, retryDelay: 30s, exponential backoff)
 
 ## Authentication
 

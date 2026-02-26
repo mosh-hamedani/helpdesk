@@ -10,6 +10,7 @@ import ticketsRouter from "./routes/tickets";
 import agentsRouter from "./routes/agents";
 import webhooksRouter from "./routes/webhooks";
 import repliesRouter from "./routes/replies";
+import { startQueue, stopQueue } from "./lib/queue";
 
 
 if (!process.env.BETTER_AUTH_SECRET) {
@@ -67,6 +68,25 @@ if (!process.env.WEBHOOK_SECRET) {
   console.warn("Warning: WEBHOOK_SECRET is not set. Webhook endpoints will return 500.");
 }
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+async function boot() {
+  await startQueue();
+
+  const server = app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+
+  const shutdown = async () => {
+    console.log("Shutting down...");
+    server.close();
+    await stopQueue();
+    process.exit(0);
+  };
+
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
+}
+
+boot().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
 });
