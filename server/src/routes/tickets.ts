@@ -16,6 +16,8 @@ router.get("/", requireAuth, async (req, res) => {
 
   if (query.status) {
     where.status = query.status;
+  } else {
+    where.status = { in: ["open", "resolved", "closed"] };
   }
 
   if (query.category) {

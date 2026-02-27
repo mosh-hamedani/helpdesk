@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { type Ticket } from "core/constants/ticket.ts";
-import { ticketStatuses, statusLabel } from "core/constants/ticket-status.ts";
+import { agentTicketStatuses, statusLabel } from "core/constants/ticket-status.ts";
 import { ticketCategories, categoryLabel } from "core/constants/ticket-category.ts";
 import {
   Select,
@@ -53,7 +53,7 @@ export default function UpdateTicket({ ticket }: UpdateTicketProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {ticketStatuses.map((s) => (
+            {agentTicketStatuses.map((s) => (
               <SelectItem key={s} value={s}>
                 {statusLabel[s]}
               </SelectItem>

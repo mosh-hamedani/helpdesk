@@ -3,7 +3,8 @@ import { inboundEmailSchema } from "core/schemas/tickets.ts";
 import { requireWebhookSecret } from "../middleware/require-webhook-secret";
 import { validate } from "../lib/validate";
 import prisma from "../db";
-import { sendClassifyJob } from "../lib/queue";
+import { sendClassifyJob } from "../lib/classify-ticket";
+import { sendAutoResolveJob } from "../lib/auto-resolve-ticket";
 
 function stripSubjectPrefixes(subject: string): string {
   return subject.replace(/^(Re:\s*|Fwd:\s*)+/i, "").trim();
@@ -54,6 +55,10 @@ router.post("/inbound-email", requireWebhookSecret, async (req, res) => {
 
   sendClassifyJob(ticket).catch((error) =>
     console.error(`Failed to enqueue classify job for ticket ${ticket.id}:`, error)
+  );
+
+  sendAutoResolveJob(ticket).catch((error) =>
+    console.error(`Failed to enqueue auto-resolve job for ticket ${ticket.id}:`, error)
   );
 });
 

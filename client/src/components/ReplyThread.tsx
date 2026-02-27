@@ -76,7 +76,7 @@ export default function ReplyThread({ ticket }: ReplyThreadProps) {
                   }}
                 />
               ) : (
-                <p>{reply.body}</p>
+                <p className="whitespace-pre-line">{reply.body}</p>
               )}
             </CardContent>
           </Card>
