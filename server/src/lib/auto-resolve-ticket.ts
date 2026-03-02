@@ -4,6 +4,7 @@ import type { PgBoss } from "pg-boss";
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import prisma from "../db";
+import { sendEmailJob } from "./send-email";
 
 const QUEUE_NAME = "auto-resolve-ticket";
 
@@ -17,6 +18,7 @@ interface AutoResolveJobData {
   subject: string;
   body: string;
   senderName: string;
+  senderEmail: string;
 }
 
 export async function registerAutoResolveWorker(boss: PgBoss): Promise<void> {
@@ -27,7 +29,7 @@ export async function registerAutoResolveWorker(boss: PgBoss): Promise<void> {
   });
 
   await boss.work<AutoResolveJobData>(QUEUE_NAME, async (jobs) => {
-    const { ticketId, subject, body, senderName } = jobs[0]!.data;
+    const { ticketId, subject, body, senderName, senderEmail } = jobs[0]!.data;
     const firstName = senderName.split(" ")[0];
 
     await prisma.ticket.update({
@@ -85,6 +87,12 @@ export async function registerAutoResolveWorker(boss: PgBoss): Promise<void> {
           data: { status: "resolved" },
         }),
       ]);
+
+      await sendEmailJob({
+        to: senderEmail,
+        subject: `Re: ${subject}`,
+        body: response,
+      });
     }
   });
 }
@@ -94,6 +102,7 @@ export async function sendAutoResolveJob(ticket: {
   subject: string;
   body: string;
   senderName: string;
+  senderEmail: string;
 }): Promise<void> {
   const { boss } = await import("./queue");
   await boss.send(QUEUE_NAME, {
@@ -101,5 +110,6 @@ export async function sendAutoResolveJob(ticket: {
     subject: ticket.subject,
     body: ticket.body,
     senderName: ticket.senderName,
+    senderEmail: ticket.senderEmail,
   });
 }

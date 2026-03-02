@@ -1,6 +1,7 @@
 import { PgBoss } from "pg-boss";
 import { registerClassifyWorker } from "./classify-ticket";
 import { registerAutoResolveWorker } from "./auto-resolve-ticket";
+import { registerSendEmailWorker } from "./send-email";
 
 const boss = new PgBoss({
   connectionString: process.env.DATABASE_URL!,
@@ -15,6 +16,7 @@ export async function startQueue(): Promise<void> {
 
   await registerClassifyWorker(boss);
   await registerAutoResolveWorker(boss);
+  await registerSendEmailWorker(boss);
 
   console.log("Job queue started");
 }

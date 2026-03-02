@@ -6,6 +6,7 @@ import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { createReplySchema, polishReplySchema } from "core/schemas/replies.ts";
 import prisma from "../db";
+import { sendEmailJob } from "../lib/send-email";
 
 const router = Router({ mergeParams: true });
 
@@ -55,6 +56,12 @@ router.post("/", requireAuth, async (req, res) => {
       userId: req.user.id,
     },
     include: { user: { select: { id: true, name: true } } },
+  });
+
+  await sendEmailJob({
+    to: ticket.senderEmail,
+    subject: `Re: ${ticket.subject}`,
+    body: data.body,
   });
 
   res.status(201).json(reply);

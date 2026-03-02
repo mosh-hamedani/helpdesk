@@ -20,6 +20,7 @@
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@sendgrid/inbound-mail-parser": "^8.0.0",
+    "@sendgrid/mail": "^8.1.6",
     "@types/multer": "^2.0.0",
     "ai": "^6.0.100",
     "better-auth": "^1.4.18",
