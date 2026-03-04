@@ -1,8 +1,11 @@
 import path from "path"
+import { createRequire } from "module"
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { sentryVitePlugin } from "@sentry/vite-plugin"
+
+const require = createRequire(import.meta.url)
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -22,8 +25,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "react": path.resolve(__dirname, "./node_modules/react"),
-      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
+      "react": path.dirname(require.resolve("react/package.json")),
+      "react-dom": path.dirname(require.resolve("react-dom/package.json")),
     },
   },
   server: {
