@@ -11,6 +11,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { type Ticket } from "core/constants/ticket.ts";
+import { categoryLabel } from "core/constants/ticket-category.ts";
 import ErrorAlert from "@/components/ErrorAlert";
 import StatusBadge from "@/components/StatusBadge";
 import { Badge } from "@/components/ui/badge";
@@ -78,7 +79,7 @@ const columns: ColumnDef<Ticket>[] = [
     cell: ({ row }) =>
       row.original.category ? (
         <Badge variant="secondary">
-          {row.original.category.replace(/_/g, " ")}
+          {categoryLabel[row.original.category]}
         </Badge>
       ) : (
         "—"
