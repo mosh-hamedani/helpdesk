@@ -6,12 +6,13 @@ import { requireAuth } from "../middleware/require-auth";
 import { requireAdmin } from "../middleware/require-admin";
 import { validate } from "../lib/validate";
 import prisma from "../db";
+import { AI_AGENT_ID } from "core/constants/ai-agent.ts";
 
 const router = Router();
 
 router.get("/", requireAuth, requireAdmin, async (req, res) => {
   const users = await prisma.user.findMany({
-    where: { deletedAt: null },
+    where: { deletedAt: null, id: { not: AI_AGENT_ID } },
     select: { id: true, name: true, email: true, role: true, createdAt: true },
     orderBy: { createdAt: "asc" },
   });
