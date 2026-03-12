@@ -1,5 +1,7 @@
 # Helpdesk
 
+> This project is built as part of my [Claude Code](https://codewithmosh.com/p/claude-code) course, showing how to build and ship a production-ready full-stack app with AI-assisted development.
+
 An AI-powered ticket management system that automatically classifies, responds to, and routes support tickets.
 
 ## Features
