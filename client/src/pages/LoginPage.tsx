@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import ErrorAlert from "@/components/ErrorAlert";
 import ErrorMessage from "@/components/ErrorMessage";
 import { Loader2 } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email"),
@@ -65,11 +66,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-primary/[0.07] via-background to-background">
       <div className="w-full max-w-[400px] px-4 animate-in-page">
         <div className="flex flex-col items-center mb-10">
-          <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center mb-5">
-            <span className="text-primary-foreground font-bold text-xl">H</span>
+          <div className="mb-5">
+            <BrandLogo size="lg" />
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">
             Welcome back

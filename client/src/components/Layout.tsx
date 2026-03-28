@@ -10,6 +10,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
+import BrandLogo from "./BrandLogo";
 
 export default function Layout() {
   const { data: session } = useSession();
@@ -32,18 +33,8 @@ export default function Layout() {
     <div className="min-h-screen flex flex-col bg-background">
       <nav className="sticky top-0 z-50 bg-background border-b px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <Link
-            to="/"
-            className="flex items-center gap-2 mr-5 group"
-          >
-            <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">
-                H
-              </span>
-            </div>
-            <span className="text-[15px] font-semibold tracking-tight group-hover:text-foreground transition-colors">
-              Helpdesk
-            </span>
+          <Link to="/" className="mr-5 group">
+            <BrandLogo showWordmark />
           </Link>
           <NavLink to="/" end className={navLinkClass}>
             <LayoutDashboard className="h-3.5 w-3.5" />
