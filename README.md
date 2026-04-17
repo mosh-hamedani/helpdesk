@@ -64,6 +64,7 @@ e2e/      - Playwright E2E tests
    ```bash
    cd server
    bunx prisma migrate dev
+   bunx prisma generate
    bunx prisma db seed
    ```
 
